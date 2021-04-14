@@ -1,5 +1,0 @@
-CREATE TABLE manufacturers (
-    id INT GENERATED ALWAYS AS IDENTITY,
-    name VARCHAR NOT NULL UNIQUE,
-    PRIMARY KEY(id)
-);

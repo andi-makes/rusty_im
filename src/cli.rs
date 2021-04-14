@@ -3,6 +3,7 @@ use structopt::StructOpt;
 
 mod manufacturer;
 mod migration;
+mod part;
 
 pub trait CommandHandler {
     fn handle(&self, connection: &db::PgConnection);
@@ -12,6 +13,7 @@ pub trait CommandHandler {
 enum Commands {
     Migration(migration::Migration),
     Manufacturer(manufacturer::Action),
+    Part(part::Action),
 }
 
 #[derive(StructOpt)]
@@ -26,5 +28,6 @@ pub fn parse(connection: &db::PgConnection) {
     match args.subcommand {
         Commands::Migration(m) => m.handle(&connection),
         Commands::Manufacturer(m) => m.handle(&connection),
+        Commands::Part(p) => p.handle(&connection),
     }
 }

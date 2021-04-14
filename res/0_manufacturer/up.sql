@@ -1,1 +1,0 @@
-../../migrations/2021-04-11-204336_manufacturer/up.sql
