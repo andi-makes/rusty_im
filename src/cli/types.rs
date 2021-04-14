@@ -3,7 +3,7 @@ use std::fmt::{self, Display};
 #[derive(StructOpt, Debug)]
 pub enum Action {
     Add { name: String },
-    Update { id: i32 },
+    Update { id: i32, new: String },
     Delete { id: i32 },
     List,
 }
@@ -15,7 +15,7 @@ impl Display for Action {
             "{}",
             match &self {
                 Action::Add { name: _ } => "add",
-                Action::Update { id: _ } => "update",
+                Action::Update { id: _, new: _ } => "update",
                 Action::Delete { id: _ } => "delete",
                 Action::List => "list",
             }

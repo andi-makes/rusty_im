@@ -9,12 +9,12 @@ pub fn parse(connection: &db::PgConnection) {
     match args.table {
         types::Table::Manufacturer { action } => match action {
             types::Action::Add { name } => {
-                db::insert_manufacturer(&connection, name);
+                db::manufacturer::insert(&connection, name);
             }
-            types::Action::Update { id } => {}
-            types::Action::Delete { id } => {}
+            types::Action::Update { id, new } => db::manufacturer::update(&connection, id, new),
+            types::Action::Delete { id } => db::manufacturer::delete(&connection, id),
             types::Action::List => {
-                for manufacturer in db::get_manufacturers(&connection) {
+                for manufacturer in db::manufacturer::get(&connection) {
                     println!("{}", manufacturer.to_string());
                 }
             }
