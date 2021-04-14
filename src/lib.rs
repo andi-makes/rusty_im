@@ -1,5 +1,9 @@
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
+extern crate structopt;
 
-pub mod database;
+pub use structopt::StructOpt;
+
+pub mod cli;
+pub mod db;
