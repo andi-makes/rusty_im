@@ -1,23 +1,30 @@
 use crate::db;
 use structopt::StructOpt;
 
-mod types;
+mod manufacturer;
+mod migration;
+
+pub trait CommandHandler {
+    fn handle(&self, connection: &db::PgConnection);
+}
+
+#[derive(StructOpt)]
+enum Commands {
+    Migration(migration::Migration),
+    Manufacturer(manufacturer::Action),
+}
+
+#[derive(StructOpt)]
+struct Cli {
+    #[structopt(subcommand)]
+    subcommand: Commands,
+}
 
 pub fn parse(connection: &db::PgConnection) {
-    let args = types::Cli::from_args();
+    let args = Cli::from_args();
 
-    match args.table {
-        types::Table::Manufacturer { action } => match action {
-            types::Action::Add { name } => {
-                db::manufacturer::insert(&connection, name);
-            }
-            types::Action::Update { id, new } => db::manufacturer::update(&connection, id, new),
-            types::Action::Delete { id } => db::manufacturer::delete(&connection, id),
-            types::Action::List => {
-                for manufacturer in db::manufacturer::get(&connection) {
-                    println!("{}", manufacturer.to_string());
-                }
-            }
-        },
+    match args.subcommand {
+        Commands::Migration(m) => m.handle(&connection),
+        Commands::Manufacturer(m) => m.handle(&connection),
     }
 }

@@ -7,6 +7,12 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# Diesel is used to communicate with the database
 diesel = { version = "1.4.6", features = ["postgres"] }
+# .env file stores configurations, this parses it
 dotenv = { version = "0.15.0" }
+# uses clap to generate a cli from structs and enums
 structopt = { version = "0.3.21" }
+# used to embed diesel migration files into the binary
+# not using diesel-embed because it doesn't allow reverting migrations
+rust-embed = { version = "5.9.0", features = ["debug-embed", "interpolate-folder-path", "compression"] }

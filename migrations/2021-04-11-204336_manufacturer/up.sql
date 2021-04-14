@@ -1,5 +1,5 @@
--- Your SQL goes here
 CREATE TABLE manufacturers (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL
+    id INT GENERATED ALWAYS AS IDENTITY,
+    name VARCHAR NOT NULL UNIQUE,
+    PRIMARY KEY(id)
 );
