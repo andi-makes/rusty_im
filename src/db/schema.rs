@@ -10,6 +10,7 @@ table! {
         id -> Int4,
         manufacturer_id -> Int4,
         name -> Varchar,
+        amount -> Int4,
     }
 }
 

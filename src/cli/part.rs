@@ -3,8 +3,14 @@ use crate::db;
 
 #[derive(StructOpt)]
 pub enum Action {
-    Add { manufacturer_id: i32, name: String },
-    Delete { id: i32 },
+    Add {
+        manufacturer_id: i32,
+        name: String,
+        amount: i32,
+    },
+    Delete {
+        id: i32,
+    },
     List,
 }
 
@@ -14,14 +20,16 @@ impl super::CommandHandler for Action {
             Action::Add {
                 manufacturer_id,
                 name,
-            } => db::part::insert(&connection, *manufacturer_id, name.to_string()),
+                amount,
+            } => db::part::insert(&connection, *manufacturer_id, name.to_string(), *amount),
             Action::Delete { id } => db::part::delete(&connection, *id),
             Action::List => {
                 let parts = db::part::get_detailed(&connection);
                 for p in parts {
                     println!(
-                        "{}: {} from {}",
+                        "id: {}, We have {} of {} from {}",
                         p.0,
+                        p.3,
                         p.1,
                         match p.2 {
                             Some(val) => val,
