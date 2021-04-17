@@ -43,6 +43,15 @@ pub fn get(con: &PgConnection) -> Vec<Part> {
     parts.load(con).unwrap()
 }
 
+pub fn get_detailed(con: &PgConnection) -> Vec<(i32, String, Option<String>)> {
+    let source = parts::table.left_join(manufacturers::table).select((
+        parts::id,
+        parts::name,
+        manufacturers::name.nullable(),
+    ));
+    source.load::<(i32, String, Option<String>)>(con).unwrap()
+}
+
 pub fn delete(conn: &PgConnection, selected_id: i32) {
     use super::schema::parts::dsl::*;
 

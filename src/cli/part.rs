@@ -17,9 +17,17 @@ impl super::CommandHandler for Action {
             } => db::part::insert(&connection, *manufacturer_id, name.to_string()),
             Action::Delete { id } => db::part::delete(&connection, *id),
             Action::List => {
-                let parts = db::part::get(&connection);
+                let parts = db::part::get_detailed(&connection);
                 for p in parts {
-                    println!("{}", p);
+                    println!(
+                        "{}: {} from {}",
+                        p.0,
+                        p.1,
+                        match p.2 {
+                            Some(val) => val,
+                            None => "NULL".to_string(),
+                        }
+                    );
                 }
             }
         }
