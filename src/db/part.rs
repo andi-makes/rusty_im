@@ -42,3 +42,11 @@ pub fn get(con: &PgConnection) -> Vec<Part> {
     use super::schema::parts::dsl::*;
     parts.load(con).unwrap()
 }
+
+pub fn delete(conn: &PgConnection, selected_id: i32) {
+    use super::schema::parts::dsl::*;
+
+    diesel::delete(parts.filter(id.eq(selected_id)))
+        .execute(conn)
+        .unwrap();
+}

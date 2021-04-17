@@ -15,7 +15,7 @@ impl super::CommandHandler for Action {
                 manufacturer_id,
                 name,
             } => db::part::insert(&connection, *manufacturer_id, name.to_string()),
-            Action::Delete { id } => todo!("Implement deleting parts!"),
+            Action::Delete { id } => db::part::delete(&connection, *id),
             Action::List => {
                 let parts = db::part::get(&connection);
                 for p in parts {
