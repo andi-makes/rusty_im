@@ -41,6 +41,14 @@ pub fn insert(con: &PgConnection, manufacturer_id: i32, name: String, amount: i3
         .unwrap();
 }
 
+pub fn update(con: &PgConnection, part_id: i32, new_amount: i32) {
+    use super::schema::parts::dsl::*;
+    diesel::update(parts.filter(id.eq(part_id)))
+        .set(amount.eq(new_amount))
+        .execute(con)
+        .unwrap();
+}
+
 pub fn get(con: &PgConnection) -> Vec<Part> {
     use super::schema::parts::dsl::*;
     parts.load(con).unwrap()

@@ -8,6 +8,10 @@ pub enum Action {
         name: String,
         amount: i32,
     },
+    Update {
+        id: i32,
+        new_amount: i32,
+    },
     Delete {
         id: i32,
     },
@@ -38,6 +42,7 @@ impl super::CommandHandler for Action {
                     );
                 }
             }
+            Action::Update { id, new_amount } => db::part::update(&connection, *id, *new_amount),
         }
     }
 }
