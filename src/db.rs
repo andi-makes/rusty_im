@@ -1,6 +1,7 @@
 pub mod manufacturer;
 pub mod part;
 pub mod tag;
+pub mod tagname;
 
 pub mod migration;
 pub mod schema;
