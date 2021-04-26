@@ -11,6 +11,8 @@ edition = "2018"
 diesel = { version = "1.4.6", features = ["postgres"] }
 # .env file stores configurations, this parses it
 dotenv = { version = "0.15.0" }
+# implements XDG Base Directory Specification, used for determining where to save config files
+directories = { version = "3.0.2" }
 # uses clap to generate a cli from structs and enums
 structopt = { version = "0.3.21" }
 # used to embed diesel migration files into the binary
