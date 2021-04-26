@@ -29,7 +29,7 @@ pub struct NewPart {
     pub amount: i32,
 }
 
-pub fn insert(con: &PgConnection, manufacturer_id: i32, name: String, amount: i32) {
+pub fn insert(connection: &PgConnection, manufacturer_id: i32, name: String, amount: i32) {
     let part = NewPart {
         manufacturer_id,
         name,
@@ -37,24 +37,24 @@ pub fn insert(con: &PgConnection, manufacturer_id: i32, name: String, amount: i3
     };
     diesel::insert_into(parts::table)
         .values(&part)
-        .execute(con)
+        .execute(connection)
         .unwrap();
 }
 
-pub fn update(con: &PgConnection, part_id: i32, new_amount: i32) {
+pub fn update(connection: &PgConnection, part_id: i32, new_amount: i32) {
     use super::schema::parts::dsl::*;
     diesel::update(parts.filter(id.eq(part_id)))
         .set(amount.eq(new_amount))
-        .execute(con)
+        .execute(connection)
         .unwrap();
 }
 
-pub fn get(con: &PgConnection) -> Vec<Part> {
+pub fn get(connection: &PgConnection) -> Vec<Part> {
     use super::schema::parts::dsl::*;
-    parts.load(con).unwrap()
+    parts.load(connection).unwrap()
 }
 
-pub fn get_detailed(con: &PgConnection) -> Vec<(i32, String, Option<String>, i32)> {
+pub fn get_detailed(connection: &PgConnection) -> Vec<(i32, String, Option<String>, i32)> {
     let source = parts::table.left_join(manufacturers::table).select((
         parts::id,
         parts::name,
@@ -62,14 +62,14 @@ pub fn get_detailed(con: &PgConnection) -> Vec<(i32, String, Option<String>, i32
         parts::amount,
     ));
     source
-        .load::<(i32, String, Option<String>, i32)>(con)
+        .load::<(i32, String, Option<String>, i32)>(connection)
         .unwrap()
 }
 
-pub fn delete(conn: &PgConnection, selected_id: i32) {
+pub fn delete(connection: &PgConnection, selected_id: i32) {
     use super::schema::parts::dsl::*;
 
     diesel::delete(parts.filter(id.eq(selected_id)))
-        .execute(conn)
+        .execute(connection)
         .unwrap();
 }

@@ -18,7 +18,7 @@ pub fn connect() -> PgConnection {
 }
 
 pub fn list(
-    conn: &PgConnection,
+    connection: &PgConnection,
 ) -> Vec<(i32, String, i32, String, Option<String>, Option<String>)> {
     use diesel::*;
     use schema::*;
@@ -40,6 +40,6 @@ pub fn list(
         tagnames::name.nullable(),
         tags::value.nullable(),
     ))
-    .load::<(i32, String, i32, String, Option<String>, Option<String>)>(conn)
+    .load::<(i32, String, i32, String, Option<String>, Option<String>)>(connection)
     .unwrap()
 }

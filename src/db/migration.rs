@@ -53,25 +53,27 @@ pub fn print_fs() {
     }
 }
 
-pub fn run(conn: &dyn diesel::connection::SimpleConnection) {
+pub fn run(connection: &dyn diesel::connection::SimpleConnection) {
     let migs = get_migrations();
 
     for mig in migs {
-        conn.batch_execute(&mig.up.unwrap())
+        connection
+            .batch_execute(&mig.up.unwrap())
             .expect("Migration failed!");
     }
 }
 
-pub fn revert(conn: &dyn diesel::connection::SimpleConnection) {
+pub fn revert(connection: &dyn diesel::connection::SimpleConnection) {
     let migs = get_migrations();
 
     for mig in migs {
-        conn.batch_execute(&mig.down.unwrap())
+        connection
+            .batch_execute(&mig.down.unwrap())
             .expect("Migration failed!");
     }
 }
 
-pub fn redo(conn: &dyn diesel::connection::SimpleConnection) {
-    revert(conn);
-    run(conn);
+pub fn redo(connection: &dyn diesel::connection::SimpleConnection) {
+    revert(connection);
+    run(connection);
 }

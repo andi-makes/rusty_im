@@ -16,29 +16,29 @@ struct NewTag {
     value: String,
 }
 
-pub fn new(conn: &PgConnection, tagname_id: i32, value: String) {
+pub fn new(connection: &PgConnection, tagname_id: i32, value: String) {
     let data = NewTag { tagname_id, value };
     diesel::insert_into(tags::table)
         .values(&data)
-        .execute(conn)
+        .execute(connection)
         .unwrap();
 }
 
-pub fn get(conn: &PgConnection) -> Vec<Tag> {
-    tags::dsl::tags.load(conn).unwrap()
+pub fn get(connection: &PgConnection) -> Vec<Tag> {
+    tags::dsl::tags.load(connection).unwrap()
 }
 
-pub fn update(conn: &PgConnection, id: i32, new_value: String) {
+pub fn update(connection: &PgConnection, id: i32, new_value: String) {
     use tags::dsl as col;
     diesel::update(col::tags.filter(col::id.eq(id)))
         .set(col::value.eq(new_value))
-        .execute(conn)
+        .execute(connection)
         .unwrap();
 }
 
-pub fn delete(conn: &PgConnection, id: i32) {
+pub fn delete(connection: &PgConnection, id: i32) {
     use tags::dsl as col;
     diesel::delete(col::tags.filter(col::id.eq(id)))
-        .execute(conn)
+        .execute(connection)
         .unwrap();
 }

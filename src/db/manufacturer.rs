@@ -17,32 +17,32 @@ pub struct NewManufacturer {
     pub name: String,
 }
 
-pub fn insert(con: &PgConnection, name: String) {
+pub fn insert(connection: &PgConnection, name: String) {
     let manufacturer = NewManufacturer { name };
     diesel::insert_into(manufacturers::table)
         .values(&manufacturer)
-        .execute(con)
+        .execute(connection)
         .unwrap();
 }
 
-pub fn update(conn: &PgConnection, selected_id: i32, new_name: String) {
+pub fn update(connection: &PgConnection, selected_id: i32, new_name: String) {
     use schema::manufacturers::dsl::*;
 
     diesel::update(manufacturers.filter(id.eq(selected_id)))
         .set(name.eq(new_name))
-        .execute(conn)
+        .execute(connection)
         .unwrap();
 }
 
-pub fn delete(conn: &PgConnection, selected_id: i32) {
+pub fn delete(connection: &PgConnection, selected_id: i32) {
     use schema::manufacturers::dsl::*;
 
     diesel::delete(manufacturers.filter(id.eq(selected_id)))
-        .execute(conn)
+        .execute(connection)
         .unwrap();
 }
 
-pub fn get(con: &PgConnection) -> Vec<Manufacturer> {
+pub fn get(connection: &PgConnection) -> Vec<Manufacturer> {
     use schema::manufacturers::dsl::*;
-    manufacturers.load(con).unwrap()
+    manufacturers.load(connection).unwrap()
 }
