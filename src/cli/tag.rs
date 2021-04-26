@@ -3,9 +3,26 @@ use crate::db;
 
 #[derive(StructOpt)]
 pub enum Action {
-    Add { tagname_id: i32, value: String },
-    Update { id: i32, new_value: String },
-    Delete { id: i32 },
+    /// Adds a new tag
+    Add {
+        /// id of the tagname of the new tag
+        tagname_id: i32,
+        /// value of the new tag
+        value: String,
+    },
+    /// Updates an existing tags value based by its id
+    Update {
+        /// id of the tag to be updated
+        id: i32,
+        /// New value of the tag
+        new_value: String,
+    },
+    /// Deletes an exisitng tag based by its id
+    Delete {
+        /// id of the tag to be deleted
+        id: i32,
+    },
+    /// Lists all tags
     List,
 }
 

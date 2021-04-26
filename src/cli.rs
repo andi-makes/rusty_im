@@ -7,30 +7,36 @@ mod part;
 mod tag;
 mod tagname;
 
+/// Defines an unified Interface for calling cli-subcommands and provides access to the database
 pub trait CommandHandler {
+    /// Provides database access for subcommands through `connection` variable
     fn handle(&self, connection: &db::PgConnection);
 }
 
 #[derive(StructOpt)]
+#[structopt(
+    name = "Rusty Inventory Manager",
+    about = "A simple inventory manager written in rust."
+)]
 enum Commands {
+    /// Low level handling of the database
     Migration(migration::Migration),
+    /// Low level managing of manufacturers
     Manufacturer(manufacturer::Action),
+    /// Low level managing of parts
     Part(part::Action),
+    /// Low level managing of tagnames
     Tagname(tagname::Action),
+    /// Low level managing of tags
     Tag(tag::Action),
+    /// Prints a view of the entire database
     List,
 }
 
-#[derive(StructOpt)]
-struct Cli {
-    #[structopt(subcommand)]
-    subcommand: Commands,
-}
-
 pub fn parse(connection: &db::PgConnection) {
-    let args = Cli::from_args();
+    let args = Commands::from_args();
 
-    match args.subcommand {
+    match args {
         Commands::Migration(m) => m.handle(&connection),
         Commands::Manufacturer(m) => m.handle(&connection),
         Commands::Part(p) => p.handle(&connection),

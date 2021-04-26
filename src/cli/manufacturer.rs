@@ -3,9 +3,24 @@ use crate::db;
 
 #[derive(StructOpt)]
 pub enum Action {
-    Add { name: String },
-    Update { id: i32, new: String },
-    Delete { id: i32 },
+    /// Adds a new manufacturer
+    Add {
+        /// Name of the new manufacturer
+        name: String,
+    },
+    /// Updates an existing manufacturers name based by its id
+    Update {
+        /// id of the manufacturer to be updated
+        id: i32,
+        /// New manufacturer name
+        new: String,
+    },
+    /// Deletes an existing manufacturer based by its id
+    Delete {
+        // id of the manufacturer to be deleted
+        id: i32,
+    },
+    /// Lists all manufacturers
     List,
 }
 

@@ -1,21 +1,22 @@
 use super::{CommandHandler, StructOpt};
 use crate::db;
-use structopt::clap::arg_enum;
 
-arg_enum! {
-    #[derive(StructOpt)]
-    pub enum Migration {
-        Run,
-        Redo,
-        Revert,
-        List,
-    }
+#[derive(StructOpt)]
+pub enum Migration {
+    /// Initialises the database
+    Init,
+    /// Deletes the database and re-initialises it
+    Redo,
+    /// Deletes the database
+    Revert,
+    /// Lists SQL statements for initialising and deleting the database
+    List,
 }
 
 impl CommandHandler for Migration {
     fn handle(&self, connection: &db::PgConnection) {
         match &self {
-            Migration::Run => db::migration::run(connection),
+            Migration::Init => db::migration::run(connection),
             Migration::Redo => db::migration::redo(connection),
             Migration::Revert => db::migration::revert(connection),
             Migration::List => db::migration::print_fs(),

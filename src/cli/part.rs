@@ -3,18 +3,28 @@ use crate::db;
 
 #[derive(StructOpt)]
 pub enum Action {
+    /// Adds a new part
     Add {
+        /// id of the manufacturer of the new part
         manufacturer_id: i32,
+        /// name of the new part
         name: String,
+        /// Initial stock of the new part
         amount: i32,
     },
+    /// Updates an existing parts stock based by its id
     Update {
+        /// id of the manufacturer to be updated
         id: i32,
+        /// New stock of the existing part
         new_amount: i32,
     },
+    /// Deletes an exisitng part based by its id
     Delete {
+        /// id of the part to be deleted
         id: i32,
     },
+    /// Lists all parts
     List,
 }
 
