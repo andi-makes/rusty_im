@@ -10,23 +10,7 @@ pub use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
 pub fn connect() -> PgConnection {
-    use directories::ProjectDirs;
-    use std::env;
-
-    let config = match ProjectDirs::from("at", "andi-makes", "rusty_im") {
-        Some(a) => a,
-        None => panic!("Cannot get project dir"),
-    };
-
-    let env_config = config.config_dir().join(".env");
-
-    if !env_config.exists() {
-        todo!("Install wizard!");
-    } else {
-        dotenv::from_path(env_config).ok();
-        let database_url = env::var("DATABASE_URL").unwrap();
-        PgConnection::establish(&database_url).unwrap()
-    }
+    PgConnection::establish(crate::config::get_database_connection_url().as_str()).unwrap()
 }
 
 pub fn list(
