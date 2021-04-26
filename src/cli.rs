@@ -18,6 +18,7 @@ enum Commands {
     Part(part::Action),
     Tagname(tagname::Action),
     Tag(tag::Action),
+    List,
 }
 
 #[derive(StructOpt)]
@@ -35,5 +36,10 @@ pub fn parse(connection: &db::PgConnection) {
         Commands::Part(p) => p.handle(&connection),
         Commands::Tagname(t) => t.handle(&connection),
         Commands::Tag(t) => t.handle(&connection),
+        Commands::List => {
+            for entry in db::list(&connection) {
+                println!("{:?}", entry);
+            }
+        }
     }
 }

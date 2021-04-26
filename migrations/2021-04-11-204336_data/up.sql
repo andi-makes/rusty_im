@@ -26,3 +26,11 @@ CREATE TABLE tags (
     PRIMARY KEY(id),
     FOREIGN KEY(tagname_id) REFERENCES tagnames(id)
 );
+CREATE TABLE part_tag (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    part_id INT NOT NULL,
+    tag_id INT NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(part_id) REFERENCES parts(id),
+    FOREIGN KEY(tag_id) REFERENCES tags(id)
+);
