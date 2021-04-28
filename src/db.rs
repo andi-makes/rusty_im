@@ -9,8 +9,8 @@ pub mod schema;
 pub use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
-pub fn connect() -> PgConnection {
-    PgConnection::establish(crate::config::get_database_connection_url().as_str()).unwrap()
+pub fn connect(url: &str) -> ConnectionResult<PgConnection> {
+    PgConnection::establish(url)
 }
 
 pub fn list(

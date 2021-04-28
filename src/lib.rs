@@ -4,5 +4,5 @@ extern crate dotenv;
 extern crate structopt;
 
 pub mod cli;
-mod config;
+pub mod config;
 pub mod db;
