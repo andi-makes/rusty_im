@@ -33,33 +33,32 @@ enum Commands {
     List,
 }
 
-pub fn parse() {
-    use crate::config;
+pub fn parse(path: &str) {
     let args = Commands::from_args();
 
     match args {
         Commands::Migration(m) => {
-            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            let connection = db::connect(path).unwrap();
             m.handle(&connection);
         }
         Commands::Manufacturer(m) => {
-            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            let connection = db::connect(path).unwrap();
             m.handle(&connection);
         }
         Commands::Part(p) => {
-            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            let connection = db::connect(path).unwrap();
             p.handle(&connection);
         }
         Commands::Tagname(t) => {
-            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            let connection = db::connect(path).unwrap();
             t.handle(&connection);
         }
         Commands::Tag(t) => {
-            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            let connection = db::connect(path).unwrap();
             t.handle(&connection);
         }
         Commands::List => {
-            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            let connection = db::connect(path).unwrap();
             for entry in db::list(&connection) {
                 println!("{:?}", entry);
             }

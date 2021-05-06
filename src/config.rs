@@ -1,4 +1,4 @@
-pub fn get_database_connection_url() -> String {
+pub fn check() -> String {
     let dirs = directories::ProjectDirs::from("dev", "andi-makes", "rim").unwrap();
 
     let data_dir_slice = match dirs.data_dir().to_str() {

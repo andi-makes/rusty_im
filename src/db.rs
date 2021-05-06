@@ -19,10 +19,7 @@ pub fn connect(url: &str) -> Result<SqliteConnection, ConnectionError> {
     let try_connection = SqliteConnection::establish(url);
 
     match try_connection {
-        Ok(connection) => {
-            // println!("Connection successful!");
-            Ok(connection)
-        }
+        Ok(connection) => Ok(connection),
         Err(err) => match err {
             diesel::ConnectionError::InvalidCString(nulerror) => {
                 eprintln!(
