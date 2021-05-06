@@ -36,6 +36,9 @@ fn get_config_file() -> PathBuf {
 }
 
 pub fn wizard() {
+    println!("Currently off-topic");
+    return;
+
     println!("Welcome to the Rusty Inventory Manager Setup Wizard.\nFirst of all, we need the Address to a PostgreSQL server.");
     let db_ip = ask_input("[Database Address]: ");
     println!("Please choose an Username that will be used to access the Database.");
@@ -93,12 +96,14 @@ pub fn wizard() {
 }
 
 fn get_db_url() -> String {
-    dotenv::from_path(get_config_file()).unwrap();
-    let ip = env::var("RIM_IP").unwrap();
-    let username = env::var("RIM_USERNAME").unwrap();
-    let password = env::var("RIM_PASSWORD").unwrap();
-    let name = env::var("RIM_DB_NAME").unwrap();
-    format!("postgres://{}:{}@{}/{}", username, password, ip, name)
+    // dotenv::from_path(get_config_file()).unwrap();
+    // let ip = env::var("RIM_IP").unwrap();
+    // let username = env::var("RIM_USERNAME").unwrap();
+    // let password = env::var("RIM_PASSWORD").unwrap();
+    // let name = env::var("RIM_DB_NAME").unwrap();
+    // format!("postgres://{}:{}@{}/{}", username, password, ip, name)
+    // TODO: no hardcoding here!
+    String::from("rusty.db")
 }
 
 pub fn get_database_connection_url() -> String {

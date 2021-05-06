@@ -14,7 +14,7 @@ pub enum Migration {
 }
 
 impl CommandHandler for Migration {
-    fn handle(&self, connection: &db::PgConnection) {
+    fn handle(&self, connection: &diesel::SqliteConnection) {
         match &self {
             Migration::Init => db::migration::run(connection),
             Migration::Redo => db::migration::redo(connection),

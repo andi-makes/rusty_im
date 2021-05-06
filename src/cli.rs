@@ -10,7 +10,7 @@ mod tagname;
 /// Defines an unified Interface for calling cli-subcommands and provides access to the database
 pub trait CommandHandler {
     /// Provides database access for subcommands through `connection` variable
-    fn handle(&self, connection: &db::PgConnection);
+    fn handle(&self, connection: &diesel::SqliteConnection);
 }
 
 #[derive(StructOpt)]

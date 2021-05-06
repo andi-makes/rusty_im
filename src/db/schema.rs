@@ -1,39 +1,39 @@
 table! {
     manufacturers (id) {
-        id -> Int4,
-        name -> Varchar,
+        id -> Integer,
+        name -> Text,
     }
 }
 
 table! {
     part_tag (id) {
-        id -> Int4,
-        part_id -> Int4,
-        tag_id -> Int4,
+        id -> Integer,
+        part_id -> Integer,
+        tag_id -> Integer,
     }
 }
 
 table! {
     parts (id) {
-        id -> Int4,
-        manufacturer_id -> Int4,
-        name -> Varchar,
-        amount -> Int4,
+        id -> Integer,
+        manufacturer_id -> Integer,
+        name -> Text,
+        amount -> Integer,
     }
 }
 
 table! {
     tagnames (id) {
-        id -> Int4,
-        name -> Varchar,
+        id -> Integer,
+        name -> Text,
     }
 }
 
 table! {
     tags (id) {
-        id -> Int4,
-        tagname_id -> Int4,
-        value -> Varchar,
+        id -> Integer,
+        tagname_id -> Integer,
+        value -> Text,
     }
 }
 

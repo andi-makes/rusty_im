@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 # Diesel is used to communicate with the database
-diesel = { version = "1.4.6", features = ["postgres"] }
+diesel = { version = "1.4.6", features = ["sqlite"] }
 # .env file stores configurations, this parses it
 dotenv = { version = "0.15.0" }
 # implements XDG Base Directory Specification, used for determining where to save config files

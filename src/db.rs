@@ -6,7 +6,6 @@ pub mod tagname;
 pub mod migration;
 pub mod schema;
 
-pub use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
 #[derive(Debug)]
@@ -16,8 +15,8 @@ pub enum ConnectionError {
     UnknownAddress { address: String },
 }
 
-pub fn connect(url: &str) -> Result<PgConnection, ConnectionError> {
-    let try_connection = PgConnection::establish(url);
+pub fn connect(url: &str) -> Result<SqliteConnection, ConnectionError> {
+    let try_connection = SqliteConnection::establish(url);
 
     match try_connection {
         Ok(connection) => {
@@ -128,7 +127,7 @@ pub fn connect(url: &str) -> Result<PgConnection, ConnectionError> {
 }
 
 pub fn list(
-    connection: &PgConnection,
+    connection: &SqliteConnection,
 ) -> Vec<(i32, String, i32, String, Option<String>, Option<String>)> {
     use diesel::*;
     use schema::*;

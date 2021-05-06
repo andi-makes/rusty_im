@@ -17,7 +17,7 @@ pub struct NewManufacturer {
     pub name: String,
 }
 
-pub fn insert(connection: &PgConnection, name: String) {
+pub fn insert(connection: &diesel::SqliteConnection, name: String) {
     let manufacturer = NewManufacturer { name };
     diesel::insert_into(manufacturers::table)
         .values(&manufacturer)
@@ -25,7 +25,7 @@ pub fn insert(connection: &PgConnection, name: String) {
         .unwrap();
 }
 
-pub fn update(connection: &PgConnection, selected_id: i32, new_name: String) {
+pub fn update(connection: &diesel::SqliteConnection, selected_id: i32, new_name: String) {
     use schema::manufacturers::dsl::*;
 
     diesel::update(manufacturers.filter(id.eq(selected_id)))
@@ -34,7 +34,7 @@ pub fn update(connection: &PgConnection, selected_id: i32, new_name: String) {
         .unwrap();
 }
 
-pub fn delete(connection: &PgConnection, selected_id: i32) {
+pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
     use schema::manufacturers::dsl::*;
 
     diesel::delete(manufacturers.filter(id.eq(selected_id)))
@@ -42,7 +42,7 @@ pub fn delete(connection: &PgConnection, selected_id: i32) {
         .unwrap();
 }
 
-pub fn get(connection: &PgConnection) -> Vec<Manufacturer> {
+pub fn get(connection: &diesel::SqliteConnection) -> Vec<Manufacturer> {
     use schema::manufacturers::dsl::*;
     manufacturers.load(connection).unwrap()
 }

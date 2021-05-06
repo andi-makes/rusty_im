@@ -25,7 +25,7 @@ pub enum Action {
 }
 
 impl super::CommandHandler for Action {
-    fn handle(&self, connection: &diesel::PgConnection) {
+    fn handle(&self, connection: &diesel::SqliteConnection) {
         match &self {
             Action::Add { name } => {
                 db::manufacturer::insert(&connection, name.trim().to_string());

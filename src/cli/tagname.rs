@@ -25,7 +25,7 @@ pub enum Action {
 }
 
 impl super::CommandHandler for Action {
-    fn handle(&self, connection: &diesel::PgConnection) {
+    fn handle(&self, connection: &diesel::SqliteConnection) {
         match &self {
             Action::Add { tagname } => db::tagname::new(&connection, tagname.to_string()),
             Action::Update { id, new_name } => {

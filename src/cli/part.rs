@@ -29,7 +29,7 @@ pub enum Action {
 }
 
 impl super::CommandHandler for Action {
-    fn handle(&self, connection: &diesel::PgConnection) {
+    fn handle(&self, connection: &diesel::SqliteConnection) {
         match &self {
             Action::Add {
                 manufacturer_id,
