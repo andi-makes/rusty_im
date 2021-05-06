@@ -31,21 +31,43 @@ enum Commands {
     Tag(tag::Action),
     /// Prints a view of the entire database
     List,
+    /// Re-executes the wizard
+    Wizard,
 }
 
-pub fn parse(connection: &db::PgConnection) {
+pub fn parse() {
+    use crate::config;
     let args = Commands::from_args();
 
     match args {
-        Commands::Migration(m) => m.handle(&connection),
-        Commands::Manufacturer(m) => m.handle(&connection),
-        Commands::Part(p) => p.handle(&connection),
-        Commands::Tagname(t) => t.handle(&connection),
-        Commands::Tag(t) => t.handle(&connection),
+        Commands::Migration(m) => {
+            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            m.handle(&connection);
+        }
+        Commands::Manufacturer(m) => {
+            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            m.handle(&connection);
+        }
+        Commands::Part(p) => {
+            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            p.handle(&connection);
+        }
+        Commands::Tagname(t) => {
+            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            t.handle(&connection);
+        }
+        Commands::Tag(t) => {
+            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
+            t.handle(&connection);
+        }
         Commands::List => {
+            let connection = db::connect(config::get_database_connection_url().as_str()).unwrap();
             for entry in db::list(&connection) {
                 println!("{:?}", entry);
             }
+        }
+        Commands::Wizard => {
+            crate::config::wizard();
         }
     }
 }

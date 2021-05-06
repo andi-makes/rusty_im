@@ -35,8 +35,7 @@ fn get_config_file() -> PathBuf {
     path
 }
 
-fn wizard() {
-    let mut config_file = File::create(get_config_file()).unwrap();
+pub fn wizard() {
     println!("Welcome to the Rusty Inventory Manager Setup Wizard.\nFirst of all, we need the Address to a PostgreSQL server.");
     let db_ip = ask_input("[Database Address]: ");
     println!("Please choose an Username that will be used to access the Database.");
@@ -53,11 +52,38 @@ fn wizard() {
     println!("Crafted DB URL: {}", db_url);
 
     match super::db::connect(&db_url) {
-        Ok(_) => {
-            println!("Connection successful!")
-        }
-        Err(err) => panic!("Connectionerror: {}", err),
+        std::result::Result::Ok(_) => {}
+        std::result::Result::Err(err) => match err {
+            crate::db::ConnectionError::DatabaseDoesNotExist { dbname } => {
+                println!("Do you want to create a database named  `{}`?", dbname);
+                let result = ask_input("Yes, no or rename? [Y/n/r] ");
+                match result.to_lowercase().as_str() {
+                    "n" => {
+                        eprintln!("please create a database named `{}` yourself and re-execute the wizard", dbname);
+                        std::process::exit(-1);
+                    }
+                    "r" => {
+                        todo!("rename");
+                    }
+                    "" | "y" => {
+                        todo!("Create db");
+                    }
+                    _ => {
+                        panic!("Non valid character");
+                    }
+                }
+                println!("{}", result);
+            }
+            crate::db::ConnectionError::UserAuthFailed { username } => {
+                todo!("Create user {} or change credentials", username)
+            }
+            crate::db::ConnectionError::UnknownAddress { address: _ } => {
+                todo!("Wrong Address!")
+            }
+        },
     }
+
+    let mut config_file = File::create(get_config_file()).unwrap();
     config_file
         .write_fmt(format_args!(
         "export RIM_CONFIGURED=true\nexport RIM_IP={}\nexport RIM_USERNAME={}\nexport RIM_PASSWORD={}\nexport RIM_DB_NAME={}",
@@ -67,6 +93,7 @@ fn wizard() {
 }
 
 fn get_db_url() -> String {
+    dotenv::from_path(get_config_file()).unwrap();
     let ip = env::var("RIM_IP").unwrap();
     let username = env::var("RIM_USERNAME").unwrap();
     let password = env::var("RIM_PASSWORD").unwrap();
@@ -83,8 +110,8 @@ pub fn get_database_connection_url() -> String {
             }
         }
         Err(_) => {
-            fs::remove_file(get_config_file()).unwrap();
-            panic!("Corrupted configuration file");
+            eprintln!("Corrupted Config File, redirecting to wizard...");
+            wizard();
         }
     }
     get_db_url()
