@@ -6,31 +6,128 @@ pub mod tagname;
 pub mod migration;
 pub mod schema;
 
-pub use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
-pub fn connect() -> PgConnection {
-    use directories::ProjectDirs;
-    use std::env;
+#[derive(Debug)]
+pub enum ConnectionError {
+    DatabaseDoesNotExist { dbname: String },
+    UserAuthFailed { username: String },
+    UnknownAddress { address: String },
+}
 
-    let config = match ProjectDirs::from("at", "andi-makes", "rusty_im") {
-        Some(a) => a,
-        None => panic!("Cannot get project dir"),
-    };
+pub fn connect(url: &str) -> Result<SqliteConnection, ConnectionError> {
+    let try_connection = SqliteConnection::establish(url);
 
-    let env_config = config.config_dir().join(".env");
-
-    if !env_config.exists() {
-        todo!("Install wizard!");
-    } else {
-        dotenv::from_path(env_config).ok();
-        let database_url = env::var("DATABASE_URL").unwrap();
-        PgConnection::establish(&database_url).unwrap()
+    match try_connection {
+        Ok(connection) => {
+            // println!("Connection successful!");
+            Ok(connection)
+        }
+        Err(err) => match err {
+            diesel::ConnectionError::InvalidCString(nulerror) => {
+                eprintln!(
+                    "Unexpected Nullbyte found in input! (How did you even manage to do this?)"
+                );
+                eprintln!("{}, Nullbyte @ index {}", url, nulerror.nul_position());
+                std::process::exit(-1);
+            }
+            diesel::ConnectionError::BadConnection(err) => {
+                eprintln!("Database returned the following error:");
+                eprintln!("{}", err);
+                if err.contains("database") && err.contains("does not exist") {
+                    let dbname = err.split('"').nth(1).unwrap().to_string();
+                    return Err(ConnectionError::DatabaseDoesNotExist { dbname: dbname });
+                } else if err.contains("password authentication failed for user") {
+                    let username = err.split('"').nth(1).unwrap().to_string();
+                    return Err(ConnectionError::UserAuthFailed { username: username });
+                } else if err.contains("could not translate host name") {
+                    let address = err.split('"').nth(1).unwrap().to_string();
+                    return Err(ConnectionError::UnknownAddress { address: address });
+                }
+                std::process::exit(-1);
+            }
+            diesel::ConnectionError::InvalidConnectionUrl(err) => {
+                eprintln!(
+                    "Database URL ({}) is invalid! (How did you even manage to do this?)",
+                    url
+                );
+                eprintln!("{}", err);
+                std::process::exit(-1);
+            }
+            diesel::ConnectionError::CouldntSetupConfiguration(err) => match err {
+                diesel::result::Error::InvalidCString(nulerror) => {
+                    eprintln!(
+                        "Unexpected Nullbyte found in input! (How did you even manage to do this?)"
+                    );
+                    eprintln!("{}, Nullbyte @ index {}", url, nulerror.nul_position());
+                    std::process::exit(-1);
+                }
+                diesel::result::Error::DatabaseError(kind, _) => match kind {
+                    diesel::result::DatabaseErrorKind::UniqueViolation => {
+                        eprintln!("A unique constraint was violated.");
+                        std::process::exit(-1);
+                    }
+                    diesel::result::DatabaseErrorKind::ForeignKeyViolation => {
+                        eprintln!("A foreign key constraint was violated.");
+                        std::process::exit(-1);
+                    }
+                    diesel::result::DatabaseErrorKind::UnableToSendCommand => {
+                        eprintln!(
+                            "The query could not be sent to the database due to a protocol violation.
+                            An example of a case where this would occur is if you attempted to send
+                            a query with more than 65000 bind parameters using PostgreSQL."
+                        );
+                        std::process::exit(-1);
+                    }
+                    diesel::result::DatabaseErrorKind::SerializationFailure => {
+                        eprintln!(
+                            "A serializable transaction failed to commit due to a read/write
+                            dependency on a concurrent transaction.
+                            Corresponds to SQLSTATE code 40001
+                            This error is only detected for PostgreSQL, as we do not yet support
+                            transaction isolation levels for other backends."
+                        );
+                        std::process::exit(-1);
+                    }
+                    _ => {
+                        panic!("Unknown Configuration error!");
+                    }
+                },
+                diesel::result::Error::NotFound => {
+                    eprintln!(
+                        "No rows were returned by a query expected to return at least one row
+                        This variant is only returned by [`get_result`] and [`first`]. [`load`]
+                        does not treat 0 rows as an error. If you would like to allow either 0
+                        or 1 rows, call [`optional`] on the result.
+                        [`get_result`]: ../query_dsl/trait.RunQueryDsl.html#method.get_result
+                        [`first`]: ../query_dsl/trait.RunQueryDsl.html#method.first
+                        [`load`]: ../query_dsl/trait.RunQueryDsl.html#method.load
+                        [`optional`]: trait.OptionalExtension.html#tymethod.optional"
+                    );
+                    std::process::exit(-1);
+                }
+                diesel::result::Error::QueryBuilderError(_) => {
+                    panic!("The query could not be constructed.");
+                }
+                diesel::result::Error::DeserializationError(_) => {
+                    panic!("An error occurred deserializing the data being sent to the database.");
+                }
+                diesel::result::Error::SerializationError(_) => {
+                    panic!("An error occurred serializing the data being sent to the database.");
+                }
+                _ => {
+                    panic!("Rollbacktransaction, Already in transaction, unknown stuff");
+                }
+            },
+            _ => {
+                panic!("Unknown Database Connection Error!")
+            }
+        },
     }
 }
 
 pub fn list(
-    connection: &PgConnection,
+    connection: &SqliteConnection,
 ) -> Vec<(i32, String, i32, String, Option<String>, Option<String>)> {
     use diesel::*;
     use schema::*;
