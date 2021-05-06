@@ -31,8 +31,6 @@ enum Commands {
     Tag(tag::Action),
     /// Prints a view of the entire database
     List,
-    /// Re-executes the wizard
-    Wizard,
 }
 
 pub fn parse() {
@@ -65,9 +63,6 @@ pub fn parse() {
             for entry in db::list(&connection) {
                 println!("{:?}", entry);
             }
-        }
-        Commands::Wizard => {
-            crate::config::wizard();
         }
     }
 }

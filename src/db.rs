@@ -20,7 +20,7 @@ pub fn connect(url: &str) -> Result<SqliteConnection, ConnectionError> {
 
     match try_connection {
         Ok(connection) => {
-            println!("Connection successful!");
+            // println!("Connection successful!");
             Ok(connection)
         }
         Err(err) => match err {
