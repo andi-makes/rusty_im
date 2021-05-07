@@ -1,11 +1,10 @@
 use crate::db;
 use structopt::StructOpt;
 
-mod manufacturer;
-mod migration;
-mod part;
-mod tag;
-mod tagname;
+mod user;
+
+mod dev;
+use dev::*;
 
 /// Defines an unified Interface for calling cli-subcommands and provides access to the database
 pub trait CommandHandler {
@@ -14,11 +13,7 @@ pub trait CommandHandler {
 }
 
 #[derive(StructOpt)]
-#[structopt(
-    name = "Rusty Inventory Manager",
-    about = "A simple inventory manager written in rust."
-)]
-enum Commands {
+enum DevCommands {
     /// Low level handling of the database
     Migration(migration::Migration),
     /// Low level managing of manufacturers
@@ -33,35 +28,53 @@ enum Commands {
     List,
 }
 
+#[derive(StructOpt)]
+#[structopt(
+    name = "Rusty Inventory Manager",
+    about = "A simple inventory manager written in rust."
+)]
+enum Commands {
+    /// Low level API for rim, intended for development purposes
+    Low(DevCommands),
+    /// Lists stored Data
+    List(user::list::Action),
+}
+
 pub fn parse(path: &str) {
     let args = Commands::from_args();
-
     match args {
-        Commands::Migration(m) => {
-            let connection = db::connect(path).unwrap();
-            m.handle(&connection);
-        }
-        Commands::Manufacturer(m) => {
-            let connection = db::connect(path).unwrap();
-            m.handle(&connection);
-        }
-        Commands::Part(p) => {
-            let connection = db::connect(path).unwrap();
-            p.handle(&connection);
-        }
-        Commands::Tagname(t) => {
-            let connection = db::connect(path).unwrap();
-            t.handle(&connection);
-        }
-        Commands::Tag(t) => {
-            let connection = db::connect(path).unwrap();
-            t.handle(&connection);
-        }
-        Commands::List => {
-            let connection = db::connect(path).unwrap();
-            for entry in db::list(&connection) {
-                println!("{:?}", entry);
+        Commands::Low(l) => match l {
+            DevCommands::Migration(m) => {
+                let connection = db::connect(path).unwrap();
+                m.handle(&connection);
             }
+            DevCommands::Manufacturer(m) => {
+                let connection = db::connect(path).unwrap();
+                m.handle(&connection);
+            }
+            DevCommands::Part(p) => {
+                let connection = db::connect(path).unwrap();
+                p.handle(&connection);
+            }
+            DevCommands::Tagname(t) => {
+                let connection = db::connect(path).unwrap();
+                t.handle(&connection);
+            }
+            DevCommands::Tag(t) => {
+                let connection = db::connect(path).unwrap();
+                t.handle(&connection);
+            }
+            DevCommands::List => {
+                println!("low level list is deprecated, use normal list instead")
+                // let connection = db::connect(path).unwrap();
+                // for entry in db::list(&connection) {
+                //     println!("{:?}", entry);
+                // }
+            }
+        },
+        Commands::List(l) => {
+            let connection = db::connect(path).unwrap();
+            l.handle(&connection)
         }
     }
 }
