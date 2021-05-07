@@ -135,6 +135,8 @@ pub struct ListTable {
     id: i32,
     #[table(title = "Name")]
     name: String,
+    #[table(title = "Description", display_fn = "cli_table_print_option_string")]
+    description: Option<String>,
     #[table(title = "Amount")]
     amount: i32,
     #[table(title = "Manufacturer")]
@@ -163,6 +165,7 @@ pub fn list(connection: &SqliteConnection) -> Vec<ListTable> {
     join.select((
         parts::id,
         parts::name,
+        parts::description,
         parts::amount,
         manufacturers::name,
         tagnames::name.nullable(),

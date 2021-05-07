@@ -3,6 +3,14 @@ use crate::db;
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
+pub enum PartUpdateFields {
+    /// New stock of the existing part
+    Amount { value: i32 },
+    /// New description of the existing part
+    Description { value: String },
+}
+
+#[derive(StructOpt)]
 pub enum Action {
     /// Adds a new part
     Add {
@@ -10,15 +18,19 @@ pub enum Action {
         manufacturer_id: i32,
         /// name of the new part
         name: String,
-        /// Initial stock of the new part
-        amount: i32,
+        /// Initial stock of the new part, defaults to zero
+        #[structopt(short = "a", long = "amount")]
+        amount: Option<i32>,
+        /// description of the new part
+        #[structopt(short = "d", long = "description")]
+        description: Option<String>,
     },
     /// Updates an existing parts stock based by its id
     Update {
         /// id of the manufacturer to be updated
         id: i32,
-        /// New stock of the existing part
-        new_amount: i32,
+        #[structopt(subcommand)]
+        field: PartUpdateFields,
     },
     /// Deletes an exisitng part based by its id
     Delete {
@@ -35,25 +47,27 @@ impl CommandHandler for Action {
             Action::Add {
                 manufacturer_id,
                 name,
+                description,
                 amount,
-            } => db::part::insert(&connection, *manufacturer_id, name.to_string(), *amount),
+            } => db::part::insert(
+                &connection,
+                *manufacturer_id,
+                name,
+                description,
+                amount.unwrap_or(0),
+            ),
             Action::Delete { id } => db::part::delete(&connection, *id),
             Action::List => {
-                let parts = db::part::get_detailed(&connection);
-                for p in parts {
-                    println!(
-                        "id: {}, We have {} of {} from {}",
-                        p.0,
-                        p.3,
-                        p.1,
-                        match p.2 {
-                            Some(val) => val,
-                            None => "NULL".to_string(),
-                        }
-                    );
-                }
+                println!("Deprecated, use list instead");
             }
-            Action::Update { id, new_amount } => db::part::update(&connection, *id, *new_amount),
+            Action::Update { id, field } => match field {
+                PartUpdateFields::Amount { value } => {
+                    db::part::update_amount(&connection, *id, *value)
+                }
+                PartUpdateFields::Description { value } => {
+                    db::part::update_description(&connection, *id, value.to_string())
+                }
+            },
         }
     }
 }

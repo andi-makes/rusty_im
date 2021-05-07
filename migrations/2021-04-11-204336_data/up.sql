@@ -8,6 +8,7 @@ CREATE TABLE parts (
     id INTEGER NOT NULL,
     manufacturer_id INTEGER NOT NULL,
     name TEXT NOT NULL,
+    description TEXT,
     amount INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY(id),
     FOREIGN KEY(manufacturer_id) REFERENCES manufacturers(id) ON DELETE CASCADE,

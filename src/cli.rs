@@ -31,7 +31,8 @@ enum DevCommands {
 #[derive(StructOpt)]
 #[structopt(
     name = "Rusty Inventory Manager",
-    about = "A simple inventory manager written in rust."
+    about = "A simple inventory manager written in rust.",
+    global_settings(&[structopt::clap::AppSettings::DisableHelpSubcommand])
 )]
 enum Commands {
     /// Low level API for rim, intended for development purposes

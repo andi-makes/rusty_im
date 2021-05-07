@@ -18,6 +18,7 @@ table! {
         id -> Integer,
         manufacturer_id -> Integer,
         name -> Text,
+        description -> Nullable<Text>,
         amount -> Integer,
     }
 }
