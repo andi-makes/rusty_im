@@ -1,9 +1,12 @@
 use super::schema::manufacturers;
 use super::*;
+use cli_table::Table;
 
-#[derive(Queryable)]
+#[derive(Queryable, Table)]
 pub struct Manufacturer {
+    #[table(title = "ID")]
     pub id: i32,
+    #[table(title = "Name")]
     pub name: String,
 }
 impl std::fmt::Display for Manufacturer {
