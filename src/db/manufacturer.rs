@@ -45,6 +45,18 @@ pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
         .unwrap();
 }
 
+pub fn get_id(connection: &diesel::SqliteConnection, selected_name: String) -> Option<i32> {
+    use schema::manufacturers::dsl::*;
+    match manufacturers
+        .filter(name.eq(selected_name))
+        .select(id)
+        .first::<i32>(connection)
+    {
+        Ok(i) => Some(i),
+        Err(_) => None,
+    }
+}
+
 pub fn get(connection: &diesel::SqliteConnection) -> Vec<Manufacturer> {
     use schema::manufacturers::dsl::*;
     manufacturers.load(connection).unwrap()

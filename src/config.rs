@@ -30,7 +30,7 @@ pub fn check() -> String {
         println!("Setting up the database...");
         let connection = super::db::connect(&db_file).unwrap();
         super::db::migration::run(&connection);
-        println!("Successfully setup the database!")
+        println!("Successfully setup the database!");
     }
 
     db_file

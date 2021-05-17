@@ -39,6 +39,8 @@ enum Commands {
     Low(DevCommands),
     /// Lists stored Data
     List(user::list::Action),
+    /// Adds data to database
+    Add(user::add::Action),
 }
 
 pub fn parse(path: &str) {
@@ -75,7 +77,11 @@ pub fn parse(path: &str) {
         },
         Commands::List(l) => {
             let connection = db::connect(path).unwrap();
-            l.handle(&connection)
+            l.handle(&connection);
+        }
+        Commands::Add(a) => {
+            let connection = db::connect(path).unwrap();
+            a.handle(&connection);
         }
     }
 }
