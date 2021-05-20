@@ -20,6 +20,12 @@ pub enum Action {
         #[structopt(short = "d", long = "description")]
         description: Option<String>,
     },
+    Tag {
+        /// The tagname of the tag.
+        name: String,
+        /// The value of the tag.
+        value: String,
+    },
 }
 
 impl CommandHandler for Action {
@@ -46,6 +52,35 @@ impl CommandHandler for Action {
                     }
                 };
                 db::part::insert(connection, manu_id, name, description, amount.unwrap_or(0));
+            }
+            Action::Tag { name, value } => {
+                let tagname_id = match db::tagname::get_id(connection, name.to_string()) {
+                    Some(id) => id,
+                    None => {
+                        print!("There is no tagname called `{}` in the database yet.\nDo you want to add it to the database? [y|N]: ", name);
+                        use std::io::Write;
+                        std::io::stdout().flush().unwrap();
+                        let mut input = String::new();
+                        std::io::stdin().read_line(&mut input).unwrap();
+                        match input.chars().nth(0) {
+                            Some(c) => match c.to_ascii_lowercase() {
+                                'y' => {
+                                    db::tagname::new(connection, name.to_string());
+                                    db::tagname::get_id(connection, name.to_string()).unwrap()
+                                }
+                                _ => {
+                                    println!("Aborting.");
+                                    std::process::exit(-1);
+                                }
+                            },
+                            None => {
+                                println!("Aborting.");
+                                std::process::exit(-1);
+                            }
+                        }
+                    }
+                };
+                db::tag::new(connection, tagname_id, value.to_string());
             }
         }
     }

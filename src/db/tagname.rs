@@ -39,3 +39,15 @@ pub fn delete(connection: &diesel::SqliteConnection, id: i32) {
         .execute(connection)
         .unwrap();
 }
+
+pub fn get_id(connection: &diesel::SqliteConnection, selected_name: String) -> Option<i32> {
+    use crate::db::schema::tagnames::dsl::*;
+    match tagnames
+        .filter(name.eq(selected_name))
+        .select(id)
+        .first::<i32>(connection)
+    {
+        Ok(i) => Some(i),
+        Err(_) => None,
+    }
+}
