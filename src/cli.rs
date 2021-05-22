@@ -41,6 +41,8 @@ enum Commands {
     List(user::list::Action),
     /// Adds data to database
     Add(user::add::Action),
+    /// Update data
+    Update(user::update::Action),
 }
 
 pub fn parse(path: &str) {
@@ -82,6 +84,10 @@ pub fn parse(path: &str) {
         Commands::Add(a) => {
             let connection = db::connect(path).unwrap();
             a.handle(&connection);
+        }
+        Commands::Update(u) => {
+            let connection = db::connect(path).unwrap();
+            u.handle(&connection);
         }
     }
 }
