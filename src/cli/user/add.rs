@@ -52,6 +52,7 @@ impl CommandHandler for Action {
                     }
                 };
                 db::part::insert(connection, manu_id, name, description, amount.unwrap_or(0));
+                println!("Added part {} from {} to database.", name, manufacturer);
             }
             Action::Tag { name, value } => {
                 let tagname_id = match db::tagname::get_id(connection, name.to_string()) {
@@ -81,6 +82,7 @@ impl CommandHandler for Action {
                     }
                 };
                 db::tag::new(connection, tagname_id, value.to_string());
+                println!("Added tag `{}: {}` to database.", name, value);
             }
         }
     }
