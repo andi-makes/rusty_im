@@ -3,24 +3,12 @@
 Simple inventory manager written in `rust`.
 
 ## Building
-### Prerequisits
-You need a PostgreSQL Database.
-Create a `.env` file with the following contents:
-```
-DATABASE_URL=postgres://{username}:{password}@{url}/{database_name}
-```
-Make sure the user and the database exist.
+Make sure you have rust and git installed. ([Installing rust](https://rustup.rs/), [Installing git](https://git-scm.com/downloads))
 
-### Building the program
+Clone this repository.
+
+After installing the rust toolchain and cloning this repository, execute the following command in the root of this repository:
 ```
 cargo build --release
 ```
-The resulting binary will be located in `target/release/rusty_im`.
-
-### Configuring the database
-Execute the following command:
-```
-rusty_im migration init
-```
-
-Now you can start using this program.
+The resulting binary will be located in the folder `target/release/`. The correct executable file is `rim` or `rim.exe`.
