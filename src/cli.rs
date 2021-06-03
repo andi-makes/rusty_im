@@ -43,6 +43,8 @@ enum Commands {
     Add(user::add::Action),
     /// Update data
     Update(user::update::Action),
+    /// Adds tags to parts
+    Tag(user::tag::Action),
 }
 
 pub fn parse(path: &str) {
@@ -88,6 +90,10 @@ pub fn parse(path: &str) {
         Commands::Update(u) => {
             let connection = db::connect(path).unwrap();
             u.handle(&connection);
+        }
+        Commands::Tag(t) => {
+            let connection = db::connect(path).unwrap();
+            t.handle(&connection);
         }
     }
 }

@@ -95,3 +95,20 @@ pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
         .execute(connection)
         .unwrap();
 }
+
+pub fn add_tag(connection: &diesel::SqliteConnection, p_id: i32, t_id: i32) {
+    use crate::db::schema::part_tag::dsl::*;
+
+    diesel::insert_into(part_tag)
+        .values((part_id.eq(p_id), tag_id.eq(t_id)))
+        .execute(connection)
+        .unwrap();
+}
+
+pub fn remove_tag(connection: &diesel::SqliteConnection, p_id: i32, t_id: i32) {
+    use crate::db::schema::part_tag::dsl::*;
+
+    diesel::delete(part_tag.filter(part_id.eq(p_id).and(tag_id.eq(t_id))))
+        .execute(connection)
+        .unwrap();
+}
