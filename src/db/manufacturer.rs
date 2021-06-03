@@ -1,9 +1,12 @@
 use super::schema::manufacturers;
 use super::*;
+use cli_table::Table;
 
-#[derive(Queryable)]
+#[derive(Queryable, Table)]
 pub struct Manufacturer {
+    #[table(title = "ID")]
     pub id: i32,
+    #[table(title = "Name")]
     pub name: String,
 }
 impl std::fmt::Display for Manufacturer {
@@ -40,6 +43,18 @@ pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
     diesel::delete(manufacturers.filter(id.eq(selected_id)))
         .execute(connection)
         .unwrap();
+}
+
+pub fn get_id(connection: &diesel::SqliteConnection, selected_name: String) -> Option<i32> {
+    use schema::manufacturers::dsl::*;
+    match manufacturers
+        .filter(name.eq(selected_name))
+        .select(id)
+        .first::<i32>(connection)
+    {
+        Ok(i) => Some(i),
+        Err(_) => None,
+    }
 }
 
 pub fn get(connection: &diesel::SqliteConnection) -> Vec<Manufacturer> {

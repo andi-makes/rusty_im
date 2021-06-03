@@ -1,5 +1,6 @@
-use super::{CommandHandler, StructOpt};
+use crate::cli::CommandHandler;
 use crate::db;
+use structopt::StructOpt;
 
 #[derive(StructOpt)]
 pub enum Migration {

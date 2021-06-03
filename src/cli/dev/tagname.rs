@@ -1,5 +1,6 @@
-use super::StructOpt;
+use crate::cli::CommandHandler;
 use crate::db;
+use structopt::StructOpt;
 
 #[derive(StructOpt)]
 pub enum Action {
@@ -24,7 +25,7 @@ pub enum Action {
     List,
 }
 
-impl super::CommandHandler for Action {
+impl CommandHandler for Action {
     fn handle(&self, connection: &diesel::SqliteConnection) {
         match &self {
             Action::Add { tagname } => db::tagname::new(&connection, tagname.to_string()),

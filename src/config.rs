@@ -1,4 +1,4 @@
-pub fn get_database_connection_url() -> String {
+pub fn check() -> String {
     let dirs = directories::ProjectDirs::from("dev", "andi-makes", "rim").unwrap();
 
     let data_dir_slice = match dirs.data_dir().to_str() {
@@ -30,7 +30,7 @@ pub fn get_database_connection_url() -> String {
         println!("Setting up the database...");
         let connection = super::db::connect(&db_file).unwrap();
         super::db::migration::run(&connection);
-        println!("Successfully setup the database!")
+        println!("Successfully setup the database!");
     }
 
     db_file

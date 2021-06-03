@@ -19,10 +19,7 @@ pub fn connect(url: &str) -> Result<SqliteConnection, ConnectionError> {
     let try_connection = SqliteConnection::establish(url);
 
     match try_connection {
-        Ok(connection) => {
-            // println!("Connection successful!");
-            Ok(connection)
-        }
+        Ok(connection) => Ok(connection),
         Err(err) => match err {
             diesel::ConnectionError::InvalidCString(nulerror) => {
                 eprintln!(
@@ -126,9 +123,33 @@ pub fn connect(url: &str) -> Result<SqliteConnection, ConnectionError> {
     }
 }
 
-pub fn list(
-    connection: &SqliteConnection,
-) -> Vec<(i32, String, i32, String, Option<String>, Option<String>)> {
+use cli_table::Table;
+
+pub fn cli_table_print_option_string(value: &Option<String>) -> impl std::fmt::Display {
+    value.clone().unwrap_or(String::from("?"))
+}
+
+#[derive(Table, Queryable)]
+pub struct ListTable {
+    #[table(title = "ID")]
+    id: i32,
+    #[table(title = "Name")]
+    name: String,
+    #[table(title = "Description", display_fn = "cli_table_print_option_string")]
+    description: Option<String>,
+    #[table(title = "Amount")]
+    amount: i32,
+    #[table(title = "Manufacturer")]
+    manufacturer: String,
+    #[table(title = "Tag", display_fn = "cli_table_print_option_string")]
+    tag: Option<String>,
+    #[table(title = "Tag-Value", display_fn = "cli_table_print_option_string")]
+    tag_value: Option<String>,
+}
+
+// fn <func_name>(value: &<type>) -> impl Display
+
+pub fn list(connection: &SqliteConnection) -> Vec<ListTable> {
     use diesel::*;
     use schema::*;
 
@@ -144,11 +165,12 @@ pub fn list(
     join.select((
         parts::id,
         parts::name,
+        parts::description,
         parts::amount,
         manufacturers::name,
         tagnames::name.nullable(),
         tags::value.nullable(),
     ))
-    .load::<(i32, String, i32, String, Option<String>, Option<String>)>(connection)
+    .load::<ListTable>(connection)
     .unwrap()
 }

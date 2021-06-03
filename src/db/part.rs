@@ -7,6 +7,7 @@ pub struct Part {
     pub id: i32,
     pub manufacturer_id: i32,
     pub name: String,
+    pub description: Option<String>,
     pub amount: i32,
 }
 
@@ -25,18 +26,21 @@ impl std::fmt::Display for Part {
 pub struct NewPart {
     pub manufacturer_id: i32,
     pub name: String,
+    pub description: Option<String>,
     pub amount: i32,
 }
 
 pub fn insert(
     connection: &diesel::SqliteConnection,
     manufacturer_id: i32,
-    name: String,
+    name: &String,
+    description: &Option<String>,
     amount: i32,
 ) {
     let part = NewPart {
         manufacturer_id,
-        name,
+        name: name.to_string(),
+        description: description.clone(),
         amount,
     };
     diesel::insert_into(parts::table)
@@ -45,10 +49,22 @@ pub fn insert(
         .unwrap();
 }
 
-pub fn update(connection: &diesel::SqliteConnection, part_id: i32, new_amount: i32) {
+pub fn update_amount(connection: &diesel::SqliteConnection, part_id: i32, new_amount: i32) {
     use super::schema::parts::dsl::*;
     diesel::update(parts.filter(id.eq(part_id)))
         .set(amount.eq(new_amount))
+        .execute(connection)
+        .unwrap();
+}
+
+pub fn update_description(
+    connection: &diesel::SqliteConnection,
+    part_id: i32,
+    new_description: String,
+) {
+    use super::schema::parts::dsl::*;
+    diesel::update(parts.filter(id.eq(part_id)))
+        .set(description.eq(new_description))
         .execute(connection)
         .unwrap();
 }
@@ -76,6 +92,23 @@ pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
     use super::schema::parts::dsl::*;
 
     diesel::delete(parts.filter(id.eq(selected_id)))
+        .execute(connection)
+        .unwrap();
+}
+
+pub fn add_tag(connection: &diesel::SqliteConnection, p_id: i32, t_id: i32) {
+    use crate::db::schema::part_tag::dsl::*;
+
+    diesel::insert_into(part_tag)
+        .values((part_id.eq(p_id), tag_id.eq(t_id)))
+        .execute(connection)
+        .unwrap();
+}
+
+pub fn remove_tag(connection: &diesel::SqliteConnection, p_id: i32, t_id: i32) {
+    use crate::db::schema::part_tag::dsl::*;
+
+    diesel::delete(part_tag.filter(part_id.eq(p_id).and(tag_id.eq(t_id))))
         .execute(connection)
         .unwrap();
 }
