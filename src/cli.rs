@@ -49,50 +49,38 @@ enum Commands {
 
 pub fn parse(path: &str) {
     let args = Commands::from_args();
+    let connection = db::connect(path);
     match args {
         Commands::Low(l) => match l {
             DevCommands::Migration(m) => {
-                let connection = db::connect(path).unwrap();
                 m.handle(&connection);
             }
             DevCommands::Manufacturer(m) => {
-                let connection = db::connect(path).unwrap();
                 m.handle(&connection);
             }
             DevCommands::Part(p) => {
-                let connection = db::connect(path).unwrap();
                 p.handle(&connection);
             }
             DevCommands::Tagname(t) => {
-                let connection = db::connect(path).unwrap();
                 t.handle(&connection);
             }
             DevCommands::Tag(t) => {
-                let connection = db::connect(path).unwrap();
                 t.handle(&connection);
             }
             DevCommands::List => {
-                println!("low level list is deprecated, use normal list instead")
-                // let connection = db::connect(path).unwrap();
-                // for entry in db::list(&connection) {
-                //     println!("{:?}", entry);
-                // }
+                println!("low level list is deprecated, use normal list instead");
             }
         },
         Commands::List(l) => {
-            let connection = db::connect(path).unwrap();
             l.handle(&connection);
         }
         Commands::Add(a) => {
-            let connection = db::connect(path).unwrap();
             a.handle(&connection);
         }
         Commands::Update(u) => {
-            let connection = db::connect(path).unwrap();
             u.handle(&connection);
         }
         Commands::Tag(t) => {
-            let connection = db::connect(path).unwrap();
             t.handle(&connection);
         }
     }

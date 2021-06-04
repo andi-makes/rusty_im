@@ -93,7 +93,7 @@ impl CommandHandler for Action {
                         amount: *amount,
                     })
                     .execute(connection)
-                    .unwrap();
+                    .expect("Could not update the manufacturer field of the part table. Aborting.\nError: ");
                 println!("Successfully updated part `{}`.", id);
             }
             Action::Tag {
@@ -144,7 +144,9 @@ impl CommandHandler for Action {
                                     diesel::update(tagnames.filter(id.eq(old_tagname_id.unwrap())))
                                         .set(name.eq(new_name.as_ref().unwrap()))
                                         .execute(connection)
-                                        .unwrap();
+                                        .expect(
+                                            "Could not create a new tagname. Aborting.\nError: ",
+                                        );
                                 }
 
                                 let new_tagname_id = {
@@ -154,7 +156,9 @@ impl CommandHandler for Action {
                                         .filter(name.eq(new_name.as_ref().unwrap()))
                                         .select(id)
                                         .first::<i32>(connection)
-                                        .unwrap()
+                                        .expect(
+                                            "Could not get the id of the tagname. Aborting.\nError: ",
+                                        )
                                 };
 
                                 // Now, we need to change all the primary keys from the old tagname to the new tagname
@@ -162,7 +166,7 @@ impl CommandHandler for Action {
                                 diesel::update(tags.filter(tagname_id.eq(old_tagname_id.unwrap())))
                                     .set(tagname_id.eq(new_tagname_id))
                                     .execute(connection)
-                                    .unwrap();
+                                    .expect("Could not update the tagname. Aborting.\nError: ");
                             }
                             _ => {
                                 // Check if the new tagname already exists
@@ -180,7 +184,9 @@ impl CommandHandler for Action {
                                         diesel::update(tags.filter(id.eq(tag_id)))
                                             .set(tagname_id.eq(existing_id))
                                             .execute(connection)
-                                            .unwrap();
+                                            .expect(
+                                                "Could not update the tagname. Aborting.\nError: ",
+                                            );
                                     }
                                     None => {
                                         // The tagname does not exist, add a new Tagname and change the tagname_id of the tags table to the new tagname
@@ -191,14 +197,15 @@ impl CommandHandler for Action {
                                         let existing_id = db::tagname::get_id(
                                             connection,
                                             new_name.as_ref().unwrap().to_string(),
-                                        )
-                                        .unwrap();
+                                        ).expect("Could not get the id of the tagname. Aborting.\n Error: ");
 
                                         use schema::tags::dsl::*;
                                         diesel::update(tags.filter(id.eq(tag_id)))
                                             .set(tagname_id.eq(existing_id))
                                             .execute(connection)
-                                            .unwrap();
+                                            .expect(
+                                                "Could not update the tagname. Aborting.\nError: ",
+                                            );
                                     }
                                 }
                             }
@@ -215,7 +222,7 @@ impl CommandHandler for Action {
                     diesel::update(tags.filter(id.eq(tag_id)))
                         .set(value.eq(new_value.as_ref().unwrap()))
                         .execute(connection)
-                        .unwrap();
+                        .expect("Could not update the value of the tag. Aborting.\nError: ");
                 }
             }
         };

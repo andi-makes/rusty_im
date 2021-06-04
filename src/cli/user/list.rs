@@ -17,10 +17,12 @@ impl CommandHandler for Action {
         use cli_table::WithTitle;
         match self {
             Action::Parts => {
-                cli_table::print_stdout(db::list(&connection).with_title()).unwrap();
+                cli_table::print_stdout(db::list(&connection).with_title())
+                    .expect("Could not print to stdout! Aborting.\nError: ");
             }
             Action::Manufacturers => {
-                cli_table::print_stdout(db::manufacturer::get(&connection).with_title()).unwrap();
+                cli_table::print_stdout(db::manufacturer::get(&connection).with_title())
+                    .expect("Could not print to stdout! Aborting.\nError: ");
             }
             Action::Tags => {
                 use cli_table::Table;
@@ -42,9 +44,10 @@ impl CommandHandler for Action {
                     .left_join(tagnames::table)
                     .select((tags::id, tagnames::name.nullable(), tags::value.nullable()))
                     .load::<TagTable>(connection)
-                    .unwrap();
+                    .expect("Could not get the joined tag table. Aborting.\nError: ");
 
-                cli_table::print_stdout(table.with_title()).unwrap();
+                cli_table::print_stdout(table.with_title())
+                    .expect("Could not print to stdout! Aborting.\nError: ");
 
                 let possible_tagnames = db::tagname::get(&connection);
                 print!("Possible Tagnames are: ");

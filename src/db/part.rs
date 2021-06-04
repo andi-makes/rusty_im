@@ -46,7 +46,7 @@ pub fn insert(
     diesel::insert_into(parts::table)
         .values(&part)
         .execute(connection)
-        .unwrap();
+        .expect("Could not insert value into part table. Aborting.\nError: ");
 }
 
 pub fn update_amount(connection: &diesel::SqliteConnection, part_id: i32, new_amount: i32) {
@@ -54,7 +54,7 @@ pub fn update_amount(connection: &diesel::SqliteConnection, part_id: i32, new_am
     diesel::update(parts.filter(id.eq(part_id)))
         .set(amount.eq(new_amount))
         .execute(connection)
-        .unwrap();
+        .expect("Could not update amount field of part table. Aborting.\nError: ");
 }
 
 pub fn update_description(
@@ -66,12 +66,14 @@ pub fn update_description(
     diesel::update(parts.filter(id.eq(part_id)))
         .set(description.eq(new_description))
         .execute(connection)
-        .unwrap();
+        .expect("Could not update description field of part table. Aborting.\nError: ");
 }
 
 pub fn get(connection: &diesel::SqliteConnection) -> Vec<Part> {
     use super::schema::parts::dsl::*;
-    parts.load(connection).unwrap()
+    parts
+        .load(connection)
+        .expect("Could not load the part table. Aborting.\nError: ")
 }
 
 pub fn get_detailed(
@@ -85,7 +87,7 @@ pub fn get_detailed(
     ));
     source
         .load::<(i32, String, Option<String>, i32)>(connection)
-        .unwrap()
+        .expect("Could not load the detailed, joined parts table view. Aborting.\nError: ")
 }
 
 pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
@@ -93,7 +95,7 @@ pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
 
     diesel::delete(parts.filter(id.eq(selected_id)))
         .execute(connection)
-        .unwrap();
+        .expect("Could not delete value from parts table. Aborting.\nError: ");
 }
 
 pub fn add_tag(connection: &diesel::SqliteConnection, p_id: i32, t_id: i32) {
@@ -102,7 +104,7 @@ pub fn add_tag(connection: &diesel::SqliteConnection, p_id: i32, t_id: i32) {
     diesel::insert_into(part_tag)
         .values((part_id.eq(p_id), tag_id.eq(t_id)))
         .execute(connection)
-        .unwrap();
+        .expect("Could not add a tag to a part. Aborting.\nError: ");
 }
 
 pub fn remove_tag(connection: &diesel::SqliteConnection, p_id: i32, t_id: i32) {
@@ -110,5 +112,5 @@ pub fn remove_tag(connection: &diesel::SqliteConnection, p_id: i32, t_id: i32) {
 
     diesel::delete(part_tag.filter(part_id.eq(p_id).and(tag_id.eq(t_id))))
         .execute(connection)
-        .unwrap();
+        .expect("Could not remove a tag from a part. Aborting.\nError: ");
 }

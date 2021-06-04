@@ -1,5 +1,11 @@
 pub fn check() -> String {
-    let dirs = directories::ProjectDirs::from("dev.andi-makes.rim", "andi-makes", "rim").unwrap();
+    let dirs = match directories::ProjectDirs::from("dev.andi-makes.rim", "andi-makes", "rim") {
+        Some(d) => d,
+        None => {
+            println!("Couldn't find a suited directory for storing the database file. Aborting.");
+            std::process::exit(-1);
+        }
+    };
 
     let data_dir_slice = match dirs.data_dir().to_str() {
         Some(d) => d,
@@ -28,7 +34,7 @@ pub fn check() -> String {
             }
         }
         println!("Setting up the database...");
-        let connection = super::db::connect(&db_file).unwrap();
+        let connection = super::db::connect(&db_file);
         super::db::migration::run(&connection);
         println!("Successfully setup the database!");
     }

@@ -25,7 +25,7 @@ pub fn insert(connection: &diesel::SqliteConnection, name: String) {
     diesel::insert_into(manufacturers::table)
         .values(&manufacturer)
         .execute(connection)
-        .unwrap();
+        .expect("Could not insert value in manufacturer table. Aborting.\nError: ");
 }
 
 pub fn update(connection: &diesel::SqliteConnection, selected_id: i32, new_name: String) {
@@ -34,7 +34,7 @@ pub fn update(connection: &diesel::SqliteConnection, selected_id: i32, new_name:
     diesel::update(manufacturers.filter(id.eq(selected_id)))
         .set(name.eq(new_name))
         .execute(connection)
-        .unwrap();
+        .expect("Could not update value in manufacturer table. Aborting.\nError: ");
 }
 
 pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
@@ -42,22 +42,21 @@ pub fn delete(connection: &diesel::SqliteConnection, selected_id: i32) {
 
     diesel::delete(manufacturers.filter(id.eq(selected_id)))
         .execute(connection)
-        .unwrap();
+        .expect("Could not delete value from manufacturer table. Aborting.\nError: ");
 }
 
 pub fn get_id(connection: &diesel::SqliteConnection, selected_name: String) -> Option<i32> {
     use schema::manufacturers::dsl::*;
-    match manufacturers
+    manufacturers
         .filter(name.eq(selected_name))
         .select(id)
         .first::<i32>(connection)
-    {
-        Ok(i) => Some(i),
-        Err(_) => None,
-    }
+        .ok()
 }
 
 pub fn get(connection: &diesel::SqliteConnection) -> Vec<Manufacturer> {
     use schema::manufacturers::dsl::*;
-    manufacturers.load(connection).unwrap()
+    manufacturers
+        .load(connection)
+        .expect("Could not load the manufacturer table. Aborting.\nError: ")
 }
