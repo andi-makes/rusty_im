@@ -1,5 +1,5 @@
 pub fn check() -> String {
-    let dirs = directories::ProjectDirs::from("dev", "andi-makes", "rim").unwrap();
+    let dirs = directories::ProjectDirs::from("dev.andi-makes.rim", "andi-makes", "rim").unwrap();
 
     let data_dir_slice = match dirs.data_dir().to_str() {
         Some(d) => d,
