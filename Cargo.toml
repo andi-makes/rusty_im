@@ -3,7 +3,12 @@ name = "rusty_im"
 version = "0.1.0"
 authors = ["andi-makes <26302678+andi-makes@users.noreply.github.com>"]
 edition = "2018"
-
+description = "Rusty Inventory Manager - a simple way to manage your stuff"
+readme = "README.md"
+repository = "https://github.com/andi-makes/rusty_im"
+license = "MIT"
+keywords = ["inventory-manager"]
+categories = ["command-line-utilities"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

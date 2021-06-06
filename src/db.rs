@@ -23,7 +23,7 @@ pub fn connect(url: &str) -> SqliteConnection {
 use cli_table::Table;
 
 pub fn cli_table_print_option_string(value: &Option<String>) -> impl std::fmt::Display {
-    value.clone().unwrap_or(String::from("?"))
+    value.clone().unwrap_or_else(|| String::from("?"))
 }
 
 #[derive(Table, Queryable)]

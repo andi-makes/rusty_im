@@ -1,3 +1,5 @@
+#![deny(clippy::all, clippy::pedantic, clippy::cargo)]
+
 use rusty_im::cli;
 use rusty_im::config;
 

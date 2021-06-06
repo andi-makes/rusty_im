@@ -60,7 +60,7 @@ impl CommandHandler for Action {
                         first = false;
                     }
                 }
-                println!("");
+                println!();
             }
         }
     }

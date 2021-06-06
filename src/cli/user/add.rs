@@ -63,7 +63,7 @@ impl CommandHandler for Action {
                         std::io::stdout().flush().unwrap();
                         let mut input = String::new();
                         std::io::stdin().read_line(&mut input).unwrap();
-                        match input.chars().nth(0) {
+                        match input.chars().next() {
                             Some(c) => match c.to_ascii_lowercase() {
                                 'y' => {
                                     db::tagname::new(connection, name.to_string());

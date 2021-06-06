@@ -113,13 +113,13 @@ impl CommandHandler for Action {
                         .ok()
                 };
 
-                if new_name.is_some() && old_tagname_id.is_some() {
-                    print!("Do you want to change all occurrences of the tagname `{}` to `{}`? [y|N]: ", "placeholder", new_name.as_ref().unwrap());
+                if let (Some(new_name_u), Some(old_tag_id_u)) = (new_name, old_tagname_id) {
+                    print!("Do you want to change all occurrences of the tagname `{}` to `{}`? [y|N]: ", db::tagname::get_name(connection, old_tag_id_u), new_name_u);
                     use std::io::Write;
                     std::io::stdout().flush().unwrap();
                     let mut input = String::new();
                     std::io::stdin().read_line(&mut input).unwrap();
-                    match input.chars().nth(0) {
+                    match input.chars().next() {
                         Some(c) => match c.to_ascii_lowercase() {
                             'y' => {
                                 // Simple, just change the tagname table, BUT
@@ -127,22 +127,19 @@ impl CommandHandler for Action {
                                 // So, let's check if it already exists:
                                 let already_exists = {
                                     use schema::tagnames::dsl::*;
-                                    match tagnames
-                                        .filter(name.eq(new_name.as_ref().unwrap()))
+                                    tagnames
+                                        .filter(name.eq(new_name_u))
                                         .select(id)
                                         .first::<i32>(connection)
                                         .ok()
-                                    {
-                                        Some(_) => true,
-                                        None => false,
-                                    }
+                                        .is_some()
                                 };
 
                                 // If it doesn't exist, we create the new Tagname!
                                 if !already_exists {
                                     use schema::tagnames::dsl::*;
-                                    diesel::update(tagnames.filter(id.eq(old_tagname_id.unwrap())))
-                                        .set(name.eq(new_name.as_ref().unwrap()))
+                                    diesel::update(tagnames.filter(id.eq(old_tag_id_u)))
+                                        .set(name.eq(new_name_u))
                                         .execute(connection)
                                         .expect(
                                             "Could not create a new tagname. Aborting.\nError: ",
@@ -153,7 +150,7 @@ impl CommandHandler for Action {
                                     use schema::tagnames::dsl::*;
 
                                     tagnames
-                                        .filter(name.eq(new_name.as_ref().unwrap()))
+                                        .filter(name.eq(new_name_u))
                                         .select(id)
                                         .first::<i32>(connection)
                                         .expect(
@@ -163,7 +160,7 @@ impl CommandHandler for Action {
 
                                 // Now, we need to change all the primary keys from the old tagname to the new tagname
                                 use schema::tags::dsl::*;
-                                diesel::update(tags.filter(tagname_id.eq(old_tagname_id.unwrap())))
+                                diesel::update(tags.filter(tagname_id.eq(old_tag_id_u)))
                                     .set(tagname_id.eq(new_tagname_id))
                                     .execute(connection)
                                     .expect("Could not update the tagname. Aborting.\nError: ");
@@ -173,7 +170,7 @@ impl CommandHandler for Action {
                                 match {
                                     use schema::tagnames::dsl::*;
                                     tagnames
-                                        .filter(name.eq(new_name.as_ref().unwrap()))
+                                        .filter(name.eq(new_name_u))
                                         .select(id)
                                         .first::<i32>(connection)
                                         .ok()
@@ -190,13 +187,10 @@ impl CommandHandler for Action {
                                     }
                                     None => {
                                         // The tagname does not exist, add a new Tagname and change the tagname_id of the tags table to the new tagname
-                                        db::tagname::new(
-                                            connection,
-                                            new_name.as_ref().unwrap().to_string(),
-                                        );
+                                        db::tagname::new(connection, new_name_u.to_string());
                                         let existing_id = db::tagname::get_id(
                                             connection,
-                                            new_name.as_ref().unwrap().to_string(),
+                                            new_name_u.to_string(),
                                         ).expect("Could not get the id of the tagname. Aborting.\n Error: ");
 
                                         use schema::tags::dsl::*;

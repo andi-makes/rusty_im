@@ -33,7 +33,7 @@ pub struct NewPart {
 pub fn insert(
     connection: &diesel::SqliteConnection,
     manufacturer_id: i32,
-    name: &String,
+    name: &str,
     description: &Option<String>,
     amount: i32,
 ) {

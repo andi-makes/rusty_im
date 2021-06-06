@@ -27,6 +27,15 @@ pub fn get(connection: &diesel::SqliteConnection) -> Vec<Tagname> {
         .expect("Could not load the tagnames table. Aborting.\nError: ")
 }
 
+pub fn get_name(connection: &diesel::SqliteConnection, tid: i32) -> String {
+    use crate::db::schema::tagnames::dsl::*;
+    tagnames
+        .find(tid)
+        .first::<Tagname>(connection)
+        .expect("Could not find the value in the tagname table. Aborting.\nError: ")
+        .name
+}
+
 pub fn update(connection: &diesel::SqliteConnection, id: i32, new_name: String) {
     use self::tagnames::dsl as col;
     diesel::update(col::tagnames.filter(col::id.eq(id)))
