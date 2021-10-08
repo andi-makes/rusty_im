@@ -1,27 +1,12 @@
 [package]
 name = "rusty_im"
 version = "0.1.0"
-authors = ["andi-makes <26302678+andi-makes@users.noreply.github.com>"]
 edition = "2018"
-description = "Rusty Inventory Manager - a simple way to manage your stuff"
-readme = "README.md"
-repository = "https://github.com/andi-makes/rusty_im"
-license = "MIT"
-keywords = ["inventory-manager"]
-categories = ["command-line-utilities"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# Diesel is used to communicate with the database
-diesel = { version = "1.4.6", features = ["sqlite"] }
-# .env file stores configurations, this parses it
-dotenv = { version = "0.15.0" }
-# implements XDG Base Directory Specification, used for determining where to save config files
-directories = { version = "3.0.2" }
-# uses clap to generate a cli from structs and enums
-structopt = { version = "0.3.21" }
-# used to embed diesel migration files into the binary
-# not using diesel-embed because it doesn't allow reverting migrations
-rust-embed = { version = "5.9.0", features = ["debug-embed", "interpolate-folder-path", "compression"] }
-# Used for pretty-printing the tables to the cli
-cli-table = "0.4"
+sea-orm = { version = "^0", features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros"], default-features = false}
+hyper = {version = "0.14", features = ["http1", "http2", "server", "runtime", "tcp", "stream"]}
+tokio = {version = "1", features = ["full"]}
+futures = "0.3"
