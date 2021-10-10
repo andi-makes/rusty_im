@@ -1,7 +1,7 @@
+use hyper::service::{make_service_fn, service_fn};
+use hyper::{Body, Method, Request, Response, Server, StatusCode};
 use std::convert::Infallible;
 use std::net::SocketAddr;
-use hyper::{Body, Method, Request, Response, Server, StatusCode};
-use hyper::service::{make_service_fn, service_fn};
 
 async fn shutdown_signal() {
     tokio::signal::ctrl_c()
@@ -13,30 +13,43 @@ async fn hello_world(req: Request<Body>) -> Result<Response<Body>, hyper::Error>
     let mut response = Response::new(Body::empty());
     let db = rusty_im::get_database().await.unwrap();
 
-    println!("{:?}", req);
-    req.uri().query().unwrap().split('&').for_each(|f| println!("{}", f));
+    // println!("{:?}", req);
+    // req.uri().query().unwrap().split('&').for_each(|f| println!("{}", f));
 
     match (req.method(), req.uri().path()) {
+        (&Method::GET, "/list") => {
+            if let Some(table_name) = req.uri().query() {
+                let res = match table_name {
+                    "batch" => format!("{:?}", rusty_im::list_batch(&db).await.unwrap()),
+                    "item" => format!("{:?}", rusty_im::list_item(&db).await.unwrap()),
+                    "property" => format!("{:?}", rusty_im::list_property(&db).await.unwrap()),
+                    "model" => format!("{:?}", rusty_im::list_model(&db).await.unwrap()),
+                    _ => "No table found".into(),
+                };
+
+                *response.body_mut() = Body::from(res);
+            } else {
+                // If there are no arguments specified, default to viewing the items table
+                *response.body_mut() =
+                    Body::from(format!("{:?}", rusty_im::list(&db).await.unwrap()));
+            }
+        }
         (&Method::GET, "/list/batch") => {
-            *response.body_mut() = Body::from(
-                format!("{:?}", rusty_im::list_batch(&db).await.unwrap())
-            );
-        },
+            *response.body_mut() =
+                Body::from(format!("{:?}", rusty_im::list_batch(&db).await.unwrap()));
+        }
         (&Method::GET, "/list/item") => {
-            *response.body_mut() = Body::from(
-                format!("{:?}", rusty_im::list_item(&db).await.unwrap())
-            );
-        },
+            *response.body_mut() =
+                Body::from(format!("{:?}", rusty_im::list_item(&db).await.unwrap()));
+        }
         (&Method::GET, "/list/model") => {
-            *response.body_mut() = Body::from(
-                format!("{:?}", rusty_im::list_model(&db).await.unwrap())
-            );
-        },
+            *response.body_mut() =
+                Body::from(format!("{:?}", rusty_im::list_model(&db).await.unwrap()));
+        }
         (&Method::GET, "/list/property") => {
-            *response.body_mut() = Body::from(
-                format!("{:?}", rusty_im::list_property(&db).await.unwrap())
-            );
-        },
+            *response.body_mut() =
+                Body::from(format!("{:?}", rusty_im::list_property(&db).await.unwrap()));
+        }
         _ => {
             *response.body_mut() = Body::from("404 - Not Found");
             *response.status_mut() = StatusCode::NOT_FOUND;
@@ -49,9 +62,8 @@ async fn hello_world(req: Request<Body>) -> Result<Response<Body>, hyper::Error>
 #[tokio::main]
 async fn main() {
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
-    let make_service = make_service_fn(|_conn| async {
-        Ok::<_, Infallible>(service_fn(hello_world))
-    });
+    let make_service =
+        make_service_fn(|_conn| async { Ok::<_, Infallible>(service_fn(hello_world)) });
     let server = Server::bind(&addr).serve(make_service);
 
     let graceful = server.with_graceful_shutdown(shutdown_signal());

@@ -13,6 +13,17 @@ pub enum Table {
     Property,
 }
 
+pub async fn list(
+    db: &DatabaseConnection,
+) -> Result<Vec<(entity::item::Model, Option<entity::property::Model>)>, sea_orm::DbErr> {
+    use entity::batch::Entity as Batch;
+    use entity::item::Entity as Item;
+    use entity::model::Entity as Model;
+    use entity::property::Entity as Property;
+
+    Item::find().find_also_related(Property).all(&db).await
+}
+
 pub async fn list_batch(
     db: &DatabaseConnection,
 ) -> Result<Vec<entity::batch::Model>, sea_orm::DbErr> {
