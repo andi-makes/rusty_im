@@ -1,12 +1,8 @@
 [package]
 name = "rusty_im"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sea-orm = { version = "^0", features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros"], default-features = false}
-hyper = {version = "0.14", features = ["http1", "http2", "server", "runtime", "tcp", "stream"]}
-tokio = {version = "1", features = ["full"]}
-futures = "0.3"
