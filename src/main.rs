@@ -1,11 +1,19 @@
 use clap::Parser;
-use sled::Result;
+use sled::{Result, IVec};
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about=None)]
 enum Args {
     Insert { key: String, val: i64 },
     List,
+    #[clap(allow_hyphen_values=true)]
+    Modify { key: String, val: i64 },
+}
+
+fn amount_from_ivec(v: IVec) -> i64 {
+    let mut buf = [0u8; 8];
+    buf.copy_from_slice(&v[0..8]);
+    i64::from_be_bytes(buf)
 }
 
 fn main() -> Result<()> {
@@ -25,12 +33,21 @@ fn main() -> Result<()> {
             // List every available key:val pair
             for (key, val) in db.iter().flatten() {
                 let key = String::from_utf8(key.to_vec()).unwrap();
-                let mut buf = [0u8; 8];
-                buf.copy_from_slice(&val[0..8]);
-                let val = u64::from_be_bytes(buf);
+                let val = amount_from_ivec(val);
                 println!("{key}: {val}");
             }
 
+            Ok(())
+        }
+        Args::Modify { key, val } => {
+            if let Some(data) = db.get(key.as_bytes()).expect("DB Error") {
+                let amount = amount_from_ivec(data);
+                let new_amount = amount + val;
+
+                db.insert(key.as_bytes(), &new_amount.to_be_bytes())?;
+            } else {
+                eprintln!("No Item named `{key}`, nothing changed.");
+            }
             Ok(())
         }
     }
