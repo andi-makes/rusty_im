@@ -8,6 +8,7 @@ enum Args {
     List,
     #[clap(allow_hyphen_values=true)]
     Modify { key: String, val: i64 },
+    Search { prefix: String },
 }
 
 fn amount_from_ivec(v: IVec) -> i64 {
@@ -47,6 +48,14 @@ fn main() -> Result<()> {
                 db.insert(key.as_bytes(), &new_amount.to_be_bytes())?;
             } else {
                 eprintln!("No Item named `{key}`, nothing changed.");
+            }
+            Ok(())
+        }
+        Args::Search { prefix } => {
+            for (key, val) in db.scan_prefix(&prefix).flatten() {
+                let key = String::from_utf8(key.to_vec()).unwrap();
+                let val = amount_from_ivec(val);
+                println!("{}: {}", key, val);
             }
             Ok(())
         }
