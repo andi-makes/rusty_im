@@ -22,6 +22,6 @@ directories = { version = "3.0.2" }
 structopt = { version = "0.3.21" }
 # used to embed diesel migration files into the binary
 # not using diesel-embed because it doesn't allow reverting migrations
-rust-embed = { version = "5.9.0", features = ["debug-embed", "interpolate-folder-path", "compression"] }
+rust-embed = { version = "6.3.0", features = ["debug-embed", "interpolate-folder-path", "compression"] }
 # Used for pretty-printing the tables to the cli
 cli-table = "0.4"

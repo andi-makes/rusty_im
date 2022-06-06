@@ -17,7 +17,7 @@ impl Mig {
 fn get_content(path: &str) -> String {
     let file =
         ConfigurationFolder::get(path).expect("Could not get SQL configuration file. Aborting.");
-    std::str::from_utf8(file.as_ref())
+    std::str::from_utf8(file.data.as_ref())
         .expect("Could not read the contents of the SQL configuration file. Aborting.\nError: ")
         .to_string()
 }
@@ -53,7 +53,7 @@ pub fn print_fs() {
         println!("{}:", file_name.as_ref());
         println!(
             "{}",
-            std::str::from_utf8(file.as_ref())
+            std::str::from_utf8(file.data.as_ref())
                 .expect("Could not read the contents of the file. Aborting.\nError: ")
         );
     }
